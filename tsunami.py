@@ -82,7 +82,7 @@ Return the corresponding h from the matrix where the point is on the map, float
 """
 def pt_to_H(A, matrix, width, height, widthOneCell):
     xa = A[0]
-    yA = A[1]
+    ya = A[1]
     # the x axis 
     i = 0
     while ((widthOneCell * i) <= xa):
@@ -90,7 +90,7 @@ def pt_to_H(A, matrix, width, height, widthOneCell):
     xM = (i-1)
     # the y axis 
     j = 0
-    while ((widthOneCell * j) <= xa):
+    while ((widthOneCell * j) <= ya):
         j+=1
     yM = (i-1)
     h = matrix[yM][xM]
