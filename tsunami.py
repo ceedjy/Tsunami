@@ -25,7 +25,7 @@ Matrix2 = [[hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
-           [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest]
+           [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest]]
 
 # Global variable :
 g = 9.806 # aproximately 9,81 m/s2 | N/kg (a more exact value is taken to be more precise)
