@@ -8,6 +8,8 @@ Subject : Tsunami representation
 
 from math import sqrt
 
+#  here we consider that the points and the map are in an orthonormal reference 
+
 # should be taken from data 
 Matrix = [[1, 2, 3, 1],
           [2, 3, 1, 2],
