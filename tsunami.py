@@ -15,6 +15,7 @@ Matrix = [[1, 2, 3, 1],
           [1, 2, 3, 1]]
 
 hTest = 3.1
+hTest2 = 4
 
 Matrix2 = [[hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
@@ -67,8 +68,6 @@ def time(h, A, B):
     dist = distance(A, B)
     sp = speed(g, h)
     time = dist/sp
-    print(dist)
-    print(sp)
     return time
 
 """
@@ -85,17 +84,17 @@ def pt_to_H(A, matrix, width, height, widthOneCell):
     ya = A[1]
     # the x axis 
     i = 0
-    while ((widthOneCell * i) <= xa):
+    while ((widthOneCell * i) < xa):
         i+=1
-    xM = (i-1)
+    xM = (i-2)
     # the y axis 
     j = 0
-    while ((widthOneCell * j) <= ya):
+    while ((widthOneCell * j) < ya):
         j+=1
-    yM = (i-1)
+    yM = (j-2)
     h = matrix[yM][xM]
+    print(xa, ya, xM, yM)
     return h
-
 
 # il faudra decouper ca pour avoir le temps total mais en fct des différentes valeurs de h
 # il faudrait appliquer time sur chaque partie de du vecteur jusqu a que ca touche les bords
@@ -104,16 +103,44 @@ def pt_to_H(A, matrix, width, height, widthOneCell):
 ### TESTS ###
 
 # for the time 
+"""
 pointA = (3, 1)
 pointB = (0, 3)
 t = time(2.1, pointA, pointB)
 print(t)
+"""
 
 # for the pt_to_H
-
-
+"""
+ptA = (69.2, 36.4)
+width = 100
+height = 100
+widthOneCell = 10
+print(pt_to_H(ptA, Matrix2, width, height, widthOneCell))
+"""
 
 # for testing if the time is good, see for a constant h and a constant distance if the time is the same
+"""
+pA = (30, 30)
+pB1 = (10, 10)
+pB2 = (50, 50)
+pB3 = (50, 10)
+pB4 = (10, 50)
 
+pB5 = (30, 10)
+pB6 = (10, 30)
+pB7 = (50, 30)
+pB8 = (30, 50)
+
+print(time(2, pA, pB1))
+print(time(2, pA, pB2))
+print(time(2, pA, pB3))
+print(time(2, pA, pB4))
+
+print(time(2, pA, pB5))
+print(time(2, pA, pB6))
+print(time(2, pA, pB7))
+print(time(2, pA, pB8))
+"""
 
 
