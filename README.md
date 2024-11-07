@@ -12,3 +12,6 @@ https://www.geeksforgeeks.org/python-opencv-cv2-line-method/
 LineIterator : (Algo Bresenham)
 https://amroamroamro.github.io/mexopencv/matlab/cv.LineIterator.html
 https://docs.opencv.org/4.x/dc/dd2/classcv_1_1LineIterator.html
+
+Bresenham (wiki):
+https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_Bresenham
