@@ -7,5 +7,8 @@ https://shimat.github.io/opencvsharp_docs/html/66fb2360-14d2-3431-c0ef-1679c153c
 https://stackoverflow.com/questions/73056691/how-do-we-interpret-the-baseline-output-of-cv2-gettextsize
 
 Line :
-https://docs.opencv.org/4.x/dc/dd2/classcv_1_1LineIterator.html
 https://www.geeksforgeeks.org/python-opencv-cv2-line-method/
+
+LineIterator : (Algo Bresenham)
+https://amroamroamro.github.io/mexopencv/matlab/cv.LineIterator.html
+https://docs.opencv.org/4.x/dc/dd2/classcv_1_1LineIterator.html
