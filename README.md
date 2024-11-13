@@ -6,6 +6,7 @@ OSEC project at University Savoie Mont Blanc
     => bouton reinitialiser la map
  - calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
  - calcul vitesse entre 2 pts sélectionnés
+ - compte rendu
 
 # Resources
 OpenCV : 
