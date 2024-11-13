@@ -20,6 +20,7 @@ def click_event(event, x, y, flags, params):
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
             # displaying the coordinates 
+            print(f'x : {x} y : {y}')
             # on the image window 
             font = cv2.FONT_HERSHEY_SIMPLEX 
             cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 
@@ -33,7 +34,7 @@ def click_event(event, x, y, flags, params):
                 points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
                 speed_sum = 0
                 for point in points_line :
-                    speed_sum += speed(g, abs(matrixH[point[0]][point[1]]))
+                    speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
                 print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
@@ -54,12 +55,16 @@ def bresenham_march(img, p1, p2):
      x2 = p2[0]
      y2 = p2[1]
      #tests if any coordinate is outside the image
+     # img.shape[0] == height
+     # img.shape[1] == width
      if ( 
-         x1 >= img.shape[0]
-         or x2 >= img.shape[0]
-         or y1 >= img.shape[1]
-         or y2 >= img.shape[1]
-     ): #tests if line is in image, necessary because some part of the line must be inside, it respects the case that the two points are outside
+         x1 >= img.shape[1]
+         or x2 >= img.shape[1]
+         or y1 >= img.shape[0]
+         or y2 >= img.shape[0]
+     ): 
+         #tests if line is in image, necessary because some part of the line must be inside, it respects the case that the two points are outside
+
          if not cv2.clipLine((0, 0, *img.shape), p1, p2):
              print("not in region")
              return
@@ -90,7 +95,7 @@ def bresenham_march(img, p1, p2):
      ret = []
      for x in range(x1, x2):
          p = (y, x) if steep else (x, y)
-         if p[0] < img.shape[0] and p[1] < img.shape[1]:
+         if p[0] < img.shape[1] and p[1] < img.shape[0]:
              ret.append(p)
          error += delta_error
          if error >= 0.5:
