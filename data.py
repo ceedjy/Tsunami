@@ -29,9 +29,22 @@ def click_event(event, x, y, flags, params):
             NB_CLICS -= 1
             
             if NB_CLICS == 0 :
+                # Draw line
+                points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
+                speed_sum = 0
+                for point in points_line :
+                    speed_sum += speed(g, abs(matrixH[point[0]][point[1]]))
+                speed_final = speed_sum / len(points_line)
+                print(f'Speed : {speed_final} m/s')
+                print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
+                
                 cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
+                cv2.imshow('image', array) # Show line on 2nd click
+                
+                # Re-init
                 TAB_CLICS = []
                 NB_CLICS = 2
+                
 
   
   
@@ -119,17 +132,10 @@ if __name__=="__main__":
     
     # Copy do not touch
     base_map = array.copy()
+    
     nb_clics = 2
     
-
-    points_line = bresenham_march(array, (0,0), (125, 50))
-    speed_sum = 0
-    for point in points_line :
-        speed_sum += speed(g, abs(matrixH[point[0]][point[1]]))
-    speed_final = speed_sum / len(points_line)
-    print(f'Sum : {speed_final} m/s')
-    print(f'Time : {distance((0,0), (125, 50))/speed_final} s')
-    
+    # Show image
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
     
