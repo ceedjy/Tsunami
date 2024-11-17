@@ -17,14 +17,21 @@ def click_event(event, x, y, flags, params):
     # Left mouse clicks 
     if NB_CLICS > 0:
         if event == cv2.EVENT_LBUTTONDOWN: 
+            #print(f'matrice218 : {matrixH[218][0]}')  
+            #print(f'matrice218: {matrixH[218][998]}')  
+            print(f'taille M217: {len(matrixH[217])}')
+            print(f'taille M218: {len(matrixH[218])}') # alors la terre est ronde ?
+            print(f'taille M219: {len(matrixH[219])}') # les putain de sous tableaux n'ont pas les memes length, c'est pour ca le indice out of range 
+            print(f'taille M220: {len(matrixH[220])}')
+            print(f'taille M1: {len(matrixH[1])}')
+            
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
             # displaying the coordinates 
             print(f'x : {x} y : {y}')
             # on the image window 
             font = cv2.FONT_HERSHEY_SIMPLEX 
-            cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 
-                        1, (0, 0, 255), 2) 
+            cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
             cv2.imshow('image', array)
             TAB_CLICS.append((x,y))
             NB_CLICS -= 1
@@ -34,6 +41,8 @@ def click_event(event, x, y, flags, params):
                 points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
                 speed_sum = 0
                 for point in points_line :
+                    #M = matrixH[point[1]][point[0]]
+                    #print(f'M : {M} / P1: {point[1]} / P0: {point[0]}')
                     speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
@@ -47,6 +56,45 @@ def click_event(event, x, y, flags, params):
                 NB_CLICS = 2
                 
 
+def Time(startPoint, endPoint): # calculate the time 
+    points_line = bresenham_march(array, startPoint, endPoint)
+    speed_sum = 0
+    for point in points_line :
+        speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
+    speed_final = speed_sum / len(points_line)
+    time = distance(startPoint, endPoint)/speed_final
+    return time
+
+def createMatrixTime(startPoint):
+    matrix = []
+    for i in range(0, len(matrixH)):
+        matrix.append([])
+        for j in range(0, len(matrixH[0])):
+            time = Time(startPoint, (j, i))
+            matrix[i].append(time)
+    return matrix
+
+def findTimeMax(matrix):
+    maxi = max(matrix[0])
+    for i in range(len(matrix)):
+        if maxi < max(matrix[i]):
+            maxi = max(matrix[i])
+    return maxi
+
+def createImageTime(startPoint):
+    matrix = createMatrixTime(startPoint)
+    array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+
+    timeMax = findTimeMax(matrix)
+
+    for i in range(len(matrixH)) :
+        for j in range(len(matrixH[i])):
+            coeff = 100-(abs(matrixH[i][j])/(abs(timeMax))*100)
+            array[i,j] = [abs(100-coeff)*255, 0, coeff*255]
+    
+    # Show image
+    cv2.imwrite('time_img.jpg', array)
+    #cv2.imshow("image", array) 
   
   
 def bresenham_march(img, p1, p2):
@@ -133,7 +181,9 @@ if __name__=="__main__":
             if matrixH[i][j]>=0.0 :
                 array[i,j]=[0,255,0]
             else:
-                array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
+                coeff = 100-(abs(matrixH[i][j])/(abs(deepMax))*100)
+                array[i,j] = [coeff*255, 0, 0] # perso je trouve ca plus accurate, j ai pas compris pk tu fais un modulo 
+                #array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
     
     # Copy do not touch
     base_map = array.copy()
