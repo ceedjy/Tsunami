@@ -18,12 +18,14 @@ def click_event(event, x, y, flags, params):
     if NB_CLICS > 0:
         if event == cv2.EVENT_LBUTTONDOWN: 
             #print(f'matrice218 : {matrixH[218][0]}')  
-            #print(f'matrice218: {matrixH[218][998]}')  
+            #print(f'matrice218: {matrixH[218][998]}') 
+            """
             print(f'taille M217: {len(matrixH[217])}')
             print(f'taille M218: {len(matrixH[218])}') # alors la terre est ronde ?
             print(f'taille M219: {len(matrixH[219])}') # les putain de sous tableaux n'ont pas les memes length, c'est pour ca le indice out of range 
             print(f'taille M220: {len(matrixH[220])}')
             print(f'taille M1: {len(matrixH[1])}')
+            """
             
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
@@ -56,7 +58,7 @@ def click_event(event, x, y, flags, params):
                 NB_CLICS = 2
                 
 
-def Time(startPoint, endPoint): # calculate the time 
+def time(startPoint, endPoint): # calculate the time 
     points_line = bresenham_march(array, startPoint, endPoint)
     speed_sum = 0
     for point in points_line :
@@ -70,8 +72,8 @@ def createMatrixTime(startPoint):
     for i in range(0, len(matrixH)):
         matrix.append([])
         for j in range(0, len(matrixH[0])):
-            time = Time(startPoint, (j, i))
-            matrix[i].append(time)
+            timeChr = time(startPoint, (j, i))
+            matrix[i].append(timeChr)
     return matrix
 
 def findTimeMax(matrix):
@@ -93,6 +95,7 @@ def createImageTime(startPoint):
             array[i,j] = [abs(100-coeff)*255, 0, coeff*255]
     
     # Show image
+    
     cv2.imwrite('time_img.jpg', array)
     #cv2.imshow("image", array) 
   
@@ -170,7 +173,7 @@ if __name__=="__main__":
     if isinstance(dataFrame['latitude'][0], str):
         dataFrame = dataFrame.drop([0])
 
-    matrixH = createMatrix(dataFrame)
+    matrixH = correctMatrix(createMatrix(dataFrame))
     array = np.zeros([len(matrixH), len(matrixH[0]), 3], dtype=np.uint8)
 
     deepMax = findDeepMax(matrixH)
@@ -178,12 +181,12 @@ if __name__=="__main__":
     for i in range(len(matrixH)) :
         for j in range(len(matrixH[i])):
             # Not water
-            if matrixH[i][j]>=0.0 :
-                array[i,j]=[0,255,0]
+            if matrixH[i][j] >= 0.0:
+                array[i, j] = [0, 100, 0]
             else:
-                coeff = 100-(abs(matrixH[i][j])/(abs(deepMax))*100)
-                array[i,j] = [coeff*255, 0, 0] # perso je trouve ca plus accurate, j ai pas compris pk tu fais un modulo 
-                #array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
+                coeff = 255-(abs(matrixH[i][j])*255/(abs(deepMax)))
+                array[i,j] = [int(coeff), 0, 0]  
+                # array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
     
     # Copy do not touch
     base_map = array.copy()

@@ -44,9 +44,20 @@ def createMatrix(dataFrame):
             row.append(height)
             studied_lat = dataFrame['latitude'][index]
         matrix.append(row)
-
     return matrix
 
+def correctMatrix(matrix):
+    normalLen = len(matrix[0])
+    for i in range(1, len(matrix)):
+        if len(matrix[i]) < normalLen:
+            print(len(matrix[i]))
+            print(normalLen)
+            for j in range(len(matrix[i]), normalLen):
+                blur = (matrix[i][j-1] + matrix[i-1][j-1] + matrix[i-1][j])/3
+                #print(blur)
+                matrix[i].append(blur)
+    #print(matrix[32][34])
+    return matrix
 
 def findDeepMax(matrix):
     mini = min(matrix[0])

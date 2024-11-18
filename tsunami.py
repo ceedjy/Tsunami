@@ -65,14 +65,14 @@ Parameters :
     A : start point, tuple (x,y)
     B : end point , tuple (x,y)
 Return the time, float  
-"""
+""""""
 def time(h, A, B):
     dist = distance(A, B)
     sp = speed(g, h)
     time = dist/sp
     return time
 
-"""
+
 A function which calulate in which case the point is on the matrix 
 Parameters : 
     A : the point, tuple (x,y)
