@@ -6,7 +6,8 @@ OSEC project at University Savoie Mont Blanc
    - [ ] => bouton reinitialiser la map
  - [x] calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
  - [x] calcul vitesse entre 2 pts sélectionnés
- - [ ] ajouter des contour sur l'image du temps 
+ - [x] ajouter des contour sur l'image du temps
+ - [ ] avoir un mini film avec les images du temps qui se propage
  - [ ] compte rendu
 
 # Resources
