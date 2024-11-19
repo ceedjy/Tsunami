@@ -14,6 +14,8 @@ def click_event(event, x, y, flags, params):
     global NB_CLICS
     global TAB_CLICS
     
+    #print(f'x: {x}, y: {y}', )
+    
     # Left mouse clicks 
     if NB_CLICS > 0:
         if event == cv2.EVENT_LBUTTONDOWN: 
@@ -63,6 +65,8 @@ def time(startPoint, endPoint): # calculate the time
     speed_sum = 0
     for point in points_line :
         speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
+    #if len(points_line) == 0: 
+        #print(startPoint, endPoint)
     speed_final = speed_sum / len(points_line)
     time = distance(startPoint, endPoint)/speed_final
     return time
@@ -72,8 +76,11 @@ def createMatrixTime(startPoint):
     for i in range(0, len(matrixH)):
         matrix.append([])
         for j in range(0, len(matrixH[0])):
-            timeChr = time(startPoint, (j, i))
-            matrix[i].append(timeChr)
+            if startPoint == (j, i):
+                matrix[i].append(0)
+            else:
+                timeChr = time(startPoint, (j, i))
+                matrix[i].append(timeChr)
     return matrix
 
 def findTimeMax(matrix):
@@ -89,15 +96,13 @@ def createImageTime(startPoint):
 
     timeMax = findTimeMax(matrix)
 
-    for i in range(len(matrixH)) :
-        for j in range(len(matrixH[i])):
-            coeff = 100-(abs(matrixH[i][j])/(abs(timeMax))*100)
-            array[i,j] = [abs(100-coeff)*255, 0, coeff*255]
+    for i in range(len(matrix)) :
+        for j in range(len(matrix[i])):
+            coeff = 1-(abs(matrix[i][j])/(abs(timeMax)))
+            array[i,j] = [1-coeff*255, 0, coeff*255]
     
     # Show image
-    
     cv2.imwrite('time_img.jpg', array)
-    #cv2.imshow("image", array) 
   
   
 def bresenham_march(img, p1, p2):
@@ -105,9 +110,7 @@ def bresenham_march(img, p1, p2):
      y1 = p1[1]
      x2 = p2[0]
      y2 = p2[1]
-     #tests if any coordinate is outside the image
-     # img.shape[0] == height
-     # img.shape[1] == width
+     
      if ( 
          x1 >= img.shape[1]
          or x2 >= img.shape[1]
@@ -164,7 +167,7 @@ def restart_window():
 # driver function 
 if __name__=="__main__": 
   
-    path = "data/bathymetry_zoom_in_japan_sea.csv"
+    path = "data/bathymetry_small_area_japan_sea.csv"
 
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
@@ -194,6 +197,8 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
+    print(len(matrixH))
+    createImageTime((120, 120))
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
     
