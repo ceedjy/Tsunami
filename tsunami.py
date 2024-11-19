@@ -11,6 +11,7 @@ from math import sqrt
 #  here we consider that the points and the map are in an orthonormal reference 
 
 # should be taken from data 
+"""
 Matrix = [[1, 2, 3, 1],
           [2, 3, 1, 2],
           [3, 1, 2, 3],
@@ -29,7 +30,7 @@ Matrix2 = [[hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest],
            [hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest, hTest]]
-
+"""
 # Global variable :
 g = 9.806 # aproximately 9,81 m/s2 | N/kg (a more exact value is taken to be more precise)
 
@@ -80,7 +81,7 @@ Parameters :
     height : the height of the entire map 
     widthOneCell : The width of only one cell in the map (we consider that one cell is a square)
 Return the corresponding h from the matrix where the point is on the map, float 
-"""
+
 def pt_to_H(A, matrix, width, height, widthOneCell):
     xa = A[0]
     ya = A[1]
@@ -97,7 +98,7 @@ def pt_to_H(A, matrix, width, height, widthOneCell):
     h = matrix[yM][xM]
     print(xa, ya, xM, yM)
     return h
-
+"""
 # il faudra decouper ca pour avoir le temps total mais en fct des différentes valeurs de h
 # il faudrait appliquer time sur chaque partie de du vecteur jusqu a que ca touche les bords
 # il faudra se mettre d'accord sur les unités de tout 

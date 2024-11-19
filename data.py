@@ -84,21 +84,69 @@ def findTimeMax(matrix):
 def createImageTime(startPoint):
     matrix = createMatrixTime(startPoint)
     array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array1 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array2 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array3 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array4 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array5 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
 
     timeMax = findTimeMax(matrix)
 
+    version = 2 # 1: coeff, 2: time in secondes
+    
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
             coeff = 1-(abs(matrix[i][j])/(abs(timeMax)))
-            #print(coeff)
-            if (coeff >= 0.8 and coeff < 0.805) or (coeff >= 0.6 and coeff < 0.605) or (coeff >= 0.4 and coeff < 0.405) or (coeff >= 0.2 and coeff < 0.205): #or coeff == 0.3 or coeff == 0.5 or coeff == 0.7 or coeff == 0.9:
-                array[i,j] = [0, 0, 0]
-            else:
-                array[i,j] = [1-coeff*255, 0, coeff*255]
-    
+            color = [1-coeff*255, 0, coeff*255]
+            # full image 
+            if version == 1: # with percent of advancement (20-40-60-80-100)
+                if (coeff >= 0.8 and coeff < 0.805) or (coeff >= 0.6 and coeff < 0.605) or (coeff >= 0.4 and coeff < 0.405) or (coeff >= 0.2 and coeff < 0.205):
+                    array[i,j] = [0, 0, 0]
+                else:
+                    array[i,j] = color
+            else: # with time in second (1-2-3-4-rest) # why note more ? too much calculus, it takes too long to process
+                if (matrix[i][j] >= 1.0 and matrix[i][j] < 1.05) or (matrix[i][j] >= 2.0 and matrix[i][j] < 2.05) or (matrix[i][j] >= 3.0 and matrix[i][j] < 3.05) or (matrix[i][j] >= 4.0 and matrix[i][j] < 4.05):
+                    array[i,j] = [0, 0, 0]
+                else:
+                    array[i,j] = color
+                
+            # movie image 
+            array5[i,j] = color
+            if (version == 1 and coeff >= 0.) or (version == 2 and matrix[i][j] <= 1.0):
+                array1[i,j] = color
+                array2[i,j] = color
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 2 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = color
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 2 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 2 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = [0, 0, 0]
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 2 and matrix[i][j] > 4.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = [0, 0, 0]
+                array4[i,j] = [0, 0, 0]
+           
     # Show image
     cv2.imwrite('time_img.jpg', array)
-  
+    # Show movie images
+    cv2.imwrite('time_movie1.jpg', array1)
+    cv2.imwrite('time_movie2.jpg', array2)
+    cv2.imwrite('time_movie3.jpg', array3)
+    cv2.imwrite('time_movie4.jpg', array4)
+    cv2.imwrite('time_movie5.jpg', array5)
+    
   
 def bresenham_march(img, p1, p2):
      x1 = p1[0]
