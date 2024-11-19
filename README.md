@@ -1,12 +1,13 @@
 # Tsunami
 OSEC project at University Savoie Mont Blanc
 # TODO
- - interface :
-    => visualiser distance + vitesse + temps jusqu'au point
-    => bouton reinitialiser la map
- - calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
- - calcul vitesse entre 2 pts sélectionnés
- - compte rendu
+ - [ ] interface :
+   - [ ] => visualiser distance + vitesse + temps jusqu'au point
+   - [ ] => bouton reinitialiser la map
+ - [x] calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
+ - [x] calcul vitesse entre 2 pts sélectionnés
+ - [ ] ajouter des contour sur l'image du temps 
+ - [ ] compte rendu
 
 # Resources
 OpenCV : 
