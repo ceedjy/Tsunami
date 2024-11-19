@@ -19,16 +19,6 @@ def click_event(event, x, y, flags, params):
     # Left mouse clicks 
     if NB_CLICS > 0:
         if event == cv2.EVENT_LBUTTONDOWN: 
-            #print(f'matrice218 : {matrixH[218][0]}')  
-            #print(f'matrice218: {matrixH[218][998]}') 
-            """
-            print(f'taille M217: {len(matrixH[217])}')
-            print(f'taille M218: {len(matrixH[218])}') # alors la terre est ronde ?
-            print(f'taille M219: {len(matrixH[219])}') # les putain de sous tableaux n'ont pas les memes length, c'est pour ca le indice out of range 
-            print(f'taille M220: {len(matrixH[220])}')
-            print(f'taille M1: {len(matrixH[1])}')
-            """
-            
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
             # displaying the coordinates 
@@ -38,6 +28,9 @@ def click_event(event, x, y, flags, params):
             cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
             cv2.imshow('image', array)
             TAB_CLICS.append((x,y))
+            # creation time image
+            if NB_CLICS == 2:
+                createImageTime((x,y))
             NB_CLICS -= 1
             
             if NB_CLICS == 0 :
@@ -45,8 +38,6 @@ def click_event(event, x, y, flags, params):
                 points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
                 speed_sum = 0
                 for point in points_line :
-                    #M = matrixH[point[1]][point[0]]
-                    #print(f'M : {M} / P1: {point[1]} / P0: {point[0]}')
                     speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
@@ -197,8 +188,6 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
-    print(len(matrixH))
-    createImageTime((120, 120))
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
     
