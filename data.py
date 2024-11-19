@@ -90,7 +90,11 @@ def createImageTime(startPoint):
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
             coeff = 1-(abs(matrix[i][j])/(abs(timeMax)))
-            array[i,j] = [1-coeff*255, 0, coeff*255]
+            #print(coeff)
+            if (coeff >= 0.8 and coeff < 0.805) or (coeff >= 0.6 and coeff < 0.605) or (coeff >= 0.4 and coeff < 0.405) or (coeff >= 0.2 and coeff < 0.205): #or coeff == 0.3 or coeff == 0.5 or coeff == 0.7 or coeff == 0.9:
+                array[i,j] = [0, 0, 0]
+            else:
+                array[i,j] = [1-coeff*255, 0, coeff*255]
     
     # Show image
     cv2.imwrite('time_img.jpg', array)
