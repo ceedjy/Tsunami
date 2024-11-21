@@ -4,6 +4,7 @@ OSEC project at University Savoie Mont Blanc
  - [ ] interface :
    - [ ] => visualiser distance + vitesse + temps jusqu'au point
    - [ ] => bouton reinitialiser la map
+   - [ ] => bouton qui demande si l'user veut un movie par rapport aux secondes ou par rapport aux porcentages
  - [x] calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
  - [x] calcul vitesse entre 2 pts sélectionnés
  - [x] ajouter des contour sur l'image du temps (isochrones -> mot a intégrer dans le compte rendu)
