@@ -4,9 +4,11 @@ import cv2
 import numpy as np
 from tsunami import * 
 from math import fabs
+import matplotlib.pyplot as plt
 
 NB_CLICS = 2
 TAB_CLICS = []
+base_map = []
 
 # function to display the coordinates of 
 # of the points clicked on the image  
@@ -151,8 +153,16 @@ def bresenham_march(img, p1, p2):
      return ret  
   
     
-def restart_window():
-    pass
+def resetImage():
+    global NB_CLICS 
+    global TAB_CLICS
+    array = base_map.copy()
+    cv2.imwrite('bat_img.jpg', array)
+    cv2.imshow("image", array) 
+    NB_CLICS = 2
+    TAB_CLICS = []
+    
+    
     
   
 # driver function 
@@ -188,18 +198,31 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
+    #cv2.namedWindow("Window")
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
+    while(1):
+        
+        cv2.imshow('image',array)
+        if nb_clics > 0:
+            cv2.setMouseCallback('image', click_event) 
+            nb_clics -= 1
+        k = cv2.waitKey(33)
+        if k==27:    # Esc key to close window
+            break
+        elif k==114:  # r pressed to reset window
+            array = base_map.copy()
+            cv2.imshow("image", array) 
+            NB_CLICS = 2
+            TAB_CLICS = []   
     
-    if nb_clics > 0:
-        cv2.setMouseCallback('image', click_event) 
-        nb_clics -= 1
 
     # wait for a key to be pressed to exit 
-    cv2.waitKey(0) 
+    cv2.waitKey(0)
+    
     
     # close the window 
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows() 
     
 
 
