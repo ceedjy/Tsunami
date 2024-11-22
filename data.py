@@ -4,6 +4,10 @@ import cv2
 import numpy as np
 from tsunami import * 
 from math import fabs
+#import time as tm
+#import os
+#import moviepy.video.io.ImageSequenceClip
+import imageio
 
 NB_CLICS = 2
 TAB_CLICS = []
@@ -30,8 +34,9 @@ def click_event(event, x, y, flags, params):
             TAB_CLICS.append((x,y))
             # creation time image
             if NB_CLICS == 2:
+                NB_CLICS -= 1
                 createImageTime((x,y))
-            NB_CLICS -= 1
+            else: NB_CLICS -= 1
             
             if NB_CLICS == 0 :
                 # Draw line
@@ -92,7 +97,7 @@ def createImageTime(startPoint):
 
     timeMax = findTimeMax(matrix)
 
-    version = 2 # 1: coeff, 2: time in secondes
+    version = 1 # 1: coeff, 2: time in secondes
     
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
@@ -137,7 +142,7 @@ def createImageTime(startPoint):
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = [0, 0, 0]
                 array4[i,j] = [0, 0, 0]
-           
+
     # Show image
     cv2.imwrite('time_img.jpg', array)
     # Show movie images
@@ -146,8 +151,20 @@ def createImageTime(startPoint):
     cv2.imwrite('time_movie3.jpg', array3)
     cv2.imwrite('time_movie4.jpg', array4)
     cv2.imwrite('time_movie5.jpg', array5)
+    createMovie(array1, array2, array3, array4, array5, array)
     
-  
+def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): # a appeler en mode (createMovieTime(mov1, mov2, mov3, mov4, mov5, time_img))
+    # faire une boucle infini dans une autre page openCV pour afficher en boucle les images de temps 
+    tab = [arr1, arr2, arr3, arr4, arr5, arr6]
+    indice = 0
+    for i in range(0, 24):
+        array = tab[indice]
+        cv2.imshow("movie", array) # Show image
+        indice = (indice+ 1)%6
+        #tm.sleep(3)
+        cv2.waitKey(1000)
+    return 
+
 def bresenham_march(img, p1, p2):
      x1 = p1[0]
      y1 = p1[1]
@@ -210,7 +227,7 @@ def restart_window():
 # driver function 
 if __name__=="__main__": 
   
-    path = "data/bathymetry_small_area_japan_sea.csv"
+    path = "data/bathymetry_golfe_gascogne.csv" #bathymetry_small_area_japan_sea
 
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
@@ -231,8 +248,7 @@ if __name__=="__main__":
                 array[i, j] = [0, 100, 0]
             else:
                 coeff = 255-(abs(matrixH[i][j])*255/(abs(deepMax)))
-                array[i,j] = [int(coeff), 0, 0]  
-                # array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
+                array[i,j] = [int(coeff), 0, 0]
     
     # Copy do not touch
     base_map = array.copy()
