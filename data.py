@@ -18,8 +18,6 @@ def click_event(event, x, y, flags, params):
     global NB_CLICS
     global TAB_CLICS
     
-    #print(f'x: {x}, y: {y}', )
-    
     # Left mouse clicks 
     if NB_CLICS > 0:
         if event == cv2.EVENT_LBUTTONDOWN: 
@@ -54,7 +52,6 @@ def click_event(event, x, y, flags, params):
                 # Re-init
                 TAB_CLICS = []
                 NB_CLICS = 2
-                
 
 def time(startPoint, endPoint): # calculate the time 
     points_line = bresenham_march(array, startPoint, endPoint)
@@ -109,7 +106,7 @@ def createImageTime(startPoint):
                     array[i,j] = [0, 0, 0]
                 else:
                     array[i,j] = color
-            else: # with time in second (1-2-3-4-rest) # why note more ? too much calculus, it takes too long to process
+            else: # with time in second (1-2-3-4-rest) # why not more images ? too much calculus, it takes too long to process
                 if (matrix[i][j] >= 1.0 and matrix[i][j] < 1.05) or (matrix[i][j] >= 2.0 and matrix[i][j] < 2.05) or (matrix[i][j] >= 3.0 and matrix[i][j] < 3.05) or (matrix[i][j] >= 4.0 and matrix[i][j] < 4.05):
                     array[i,j] = [0, 0, 0]
                 else:
