@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from tsunami import * 
 from math import fabs
-import matplotlib.pyplot as plt
 
 NB_CLICS = 2
 TAB_CLICS = []
@@ -15,8 +14,6 @@ base_map = []
 def click_event(event, x, y, flags, params): 
     global NB_CLICS
     global TAB_CLICS
-    
-    #print(f'x: {x}, y: {y}', )
     
     # Left mouse clicks 
     if NB_CLICS > 0:
@@ -32,8 +29,9 @@ def click_event(event, x, y, flags, params):
             TAB_CLICS.append((x,y))
             # creation time image
             if NB_CLICS == 2:
+                NB_CLICS -= 1
                 createImageTime((x,y))
-            NB_CLICS -= 1
+            else: NB_CLICS -= 1
             
             if NB_CLICS == 0 :
                 # Draw line
@@ -51,7 +49,6 @@ def click_event(event, x, y, flags, params):
                 # Re-init
                 TAB_CLICS = []
                 NB_CLICS = 2
-                
 
 def time(startPoint, endPoint): # calculate the time 
     points_line = bresenham_march(array, startPoint, endPoint)
@@ -86,18 +83,82 @@ def findTimeMax(matrix):
 def createImageTime(startPoint):
     matrix = createMatrixTime(startPoint)
     array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array1 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array2 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array3 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array4 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    array5 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
 
     timeMax = findTimeMax(matrix)
 
+    version = 1 # 1: coeff, 2: time in secondes
+    
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
             coeff = 1-(abs(matrix[i][j])/(abs(timeMax)))
-            array[i,j] = [1-coeff*255, 0, coeff*255]
-    
+            color = [1-coeff*255, 0, coeff*255]
+            # full image 
+            if version == 1: # with percent of advancement (20-40-60-80-100)
+                if (coeff >= 0.8 and coeff < 0.805) or (coeff >= 0.6 and coeff < 0.605) or (coeff >= 0.4 and coeff < 0.405) or (coeff >= 0.2 and coeff < 0.205):
+                    array[i,j] = [0, 0, 0]
+                else:
+                    array[i,j] = color
+            else: # with time in second (1-2-3-4-rest) # why not more images ? too much calculus, it takes too long to process
+                if (matrix[i][j] >= 1.0 and matrix[i][j] < 1.05) or (matrix[i][j] >= 2.0 and matrix[i][j] < 2.05) or (matrix[i][j] >= 3.0 and matrix[i][j] < 3.05) or (matrix[i][j] >= 4.0 and matrix[i][j] < 4.05):
+                    array[i,j] = [0, 0, 0]
+                else:
+                    array[i,j] = color
+                
+            # movie image 
+            array5[i,j] = color
+            if (version == 1 and coeff >= 0.) or (version == 2 and matrix[i][j] <= 1.0):
+                array1[i,j] = color
+                array2[i,j] = color
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 2 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = color
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 2 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = color
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 2 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = [0, 0, 0]
+                array4[i,j] = color
+            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 2 and matrix[i][j] > 4.0):
+                array1[i,j] = [0, 0, 0]
+                array2[i,j] = [0, 0, 0]
+                array3[i,j] = [0, 0, 0]
+                array4[i,j] = [0, 0, 0]
+
     # Show image
     cv2.imwrite('time_img.jpg', array)
-  
-  
+    # Show movie images
+    cv2.imwrite('time_movie1.jpg', array1)
+    cv2.imwrite('time_movie2.jpg', array2)
+    cv2.imwrite('time_movie3.jpg', array3)
+    cv2.imwrite('time_movie4.jpg', array4)
+    cv2.imwrite('time_movie5.jpg', array5)
+    createMovie(array1, array2, array3, array4, array5, array)
+    
+def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): # a appeler en mode (createMovieTime(mov1, mov2, mov3, mov4, mov5, time_img))
+    # faire une boucle infini dans une autre page openCV pour afficher en boucle les images de temps 
+    tab = [arr1, arr2, arr3, arr4, arr5, arr6]
+    indice = 0
+    for i in range(0, 24):
+        array = tab[indice]
+        cv2.imshow("movie", array) # Show image
+        indice = (indice+ 1)%6
+        #tm.sleep(3)
+        cv2.waitKey(1000)
+    return 
+
 def bresenham_march(img, p1, p2):
      x1 = p1[0]
      y1 = p1[1]
@@ -150,25 +211,14 @@ def bresenham_march(img, p1, p2):
              error -= 1
      if also_steep:  # because we took the left to right instead
          ret.reverse()
-     return ret  
-  
-    
-def resetImage():
-    global NB_CLICS 
-    global TAB_CLICS
-    array = base_map.copy()
-    cv2.imwrite('bat_img.jpg', array)
-    cv2.imshow("image", array) 
-    NB_CLICS = 2
-    TAB_CLICS = []
-    
+     return ret   
     
     
   
 # driver function 
 if __name__=="__main__": 
   
-    path = "data/bathymetry_small_area_japan_sea.csv"
+    path = "data/bathymetry_golfe_gascogne.csv" #bathymetry_small_area_japan_sea
 
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
@@ -189,8 +239,7 @@ if __name__=="__main__":
                 array[i, j] = [0, 100, 0]
             else:
                 coeff = 255-(abs(matrixH[i][j])*255/(abs(deepMax)))
-                array[i,j] = [int(coeff), 0, 0]  
-                # array[i,j] = [(abs(deepMax)-abs(matrixH[i][j]))%255, 0, 0]
+                array[i,j] = [int(coeff), 0, 0]
     
     # Copy do not touch
     base_map = array.copy()
