@@ -251,7 +251,8 @@ if __name__=="__main__":
     cv2.imshow("image", array) 
     
     
-    while(cv2.getWindowProperty('image', 0) >= 0):
+    
+    while(cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) > 0):
         
         cv2.imshow('image',array)
         
