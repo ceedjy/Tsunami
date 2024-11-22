@@ -55,8 +55,7 @@ def time(startPoint, endPoint): # calculate the time
     speed_sum = 0
     for point in points_line :
         speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
-    #if len(points_line) == 0: 
-        #print(startPoint, endPoint)
+
     speed_final = speed_sum / len(points_line)
     time = distance(startPoint, endPoint)/speed_final
     return time
@@ -217,8 +216,8 @@ def bresenham_march(img, p1, p2):
   
 # driver function 
 if __name__=="__main__": 
-  
-    path = "data/bathymetry_golfe_gascogne.csv" #bathymetry_small_area_japan_sea
+
+    path = "data/bathymetry_small_area_japan_sea.csv"
 
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
@@ -250,12 +249,16 @@ if __name__=="__main__":
     #cv2.namedWindow("Window")
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
-    while(1):
+    
+    
+    while(cv2.getWindowProperty('image', 0) >= 0):
         
         cv2.imshow('image',array)
+        
         if nb_clics > 0:
             cv2.setMouseCallback('image', click_event) 
             nb_clics -= 1
+            
         k = cv2.waitKey(33)
         if k==27:    # Esc key to close window
             break
@@ -267,8 +270,7 @@ if __name__=="__main__":
     
 
     # wait for a key to be pressed to exit 
-    cv2.waitKey(0)
-    
+    #cv2.waitKey(0)
     
     # close the window 
     cv2.destroyAllWindows() 
