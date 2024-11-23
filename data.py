@@ -1,3 +1,9 @@
+"""
+Authors : 
+    Morgane Farez 
+    Cassiopée Gossin 
+"""
+
 import pandas as pd
 from data_functions import *
 import cv2
@@ -5,61 +11,34 @@ import numpy as np
 from tsunami import * 
 from math import fabs
 
+# global variables 
 NB_CLICS = 2
 TAB_CLICS = []
-base_map = []
 
-# function to display the coordinates of 
-# of the points clicked on the image  
-def click_event(event, x, y, flags, params): 
-    global NB_CLICS
-    global TAB_CLICS
-    
-    # Left mouse clicks 
-    if NB_CLICS > 0:
-        if event == cv2.EVENT_LBUTTONDOWN: 
-            # displaying X on image
-            sizeX = cv2.getTextSize('X', 0, 1.0, 1)
-            # displaying the coordinates 
-            print(f'x : {x} y : {y}')
-            # on the image window 
-            font = cv2.FONT_HERSHEY_SIMPLEX 
-            cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
-            cv2.imshow('image', array)
-            TAB_CLICS.append((x,y))
-            # creation time image
-            if NB_CLICS == 2:
-                NB_CLICS -= 1
-                createImageTime((x,y))
-            else: NB_CLICS -= 1
-            
-            if NB_CLICS == 0 :
-                # Draw line
-                points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
-                speed_sum = 0
-                for point in points_line :
-                    speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
-                speed_final = speed_sum / len(points_line)
-                print(f'Speed : {speed_final} m/s')
-                print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
-                
-                cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
-                cv2.imshow('image', array) # Show line on 2nd click
-                
-                # Re-init
-                TAB_CLICS = []
-                NB_CLICS = 2
+# functions to create a gif : 
 
-def time(startPoint, endPoint): # calculate the time 
+""" 
+Calculate the time between two point using Bresenham march 
+Parameters :
+    stratPoint : the start point, a tuple (x, y)
+    endPoint : the endpoint, a tuple (x, y)
+Return the time, float
+"""
+def time(startPoint, endPoint):
     points_line = bresenham_march(array, startPoint, endPoint)
     speed_sum = 0
     for point in points_line :
         speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
-
     speed_final = speed_sum / len(points_line)
     time = distance(startPoint, endPoint)/speed_final
     return time
 
+""" 
+Creating the matrix for the time image
+Parameters :
+    startPoint : the start point, a tuple (x, y)
+Return the matrix were all times are calculated 
+"""
 def createMatrixTime(startPoint):
     matrix = []
     for i in range(0, len(matrixH)):
@@ -72,13 +51,12 @@ def createMatrixTime(startPoint):
                 matrix[i].append(timeChr)
     return matrix
 
-def findTimeMax(matrix):
-    maxi = max(matrix[0])
-    for i in range(len(matrix)):
-        if maxi < max(matrix[i]):
-            maxi = max(matrix[i])
-    return maxi
-
+""" 
+Creating the image with the matrix of the time 
+Parameters :
+    startPoint : the start point, a tuple (x, y)
+Return nothing, but upload images and call the gif function 
+"""
 def createImageTime(startPoint):
     matrix = createMatrixTime(startPoint)
     array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
@@ -88,7 +66,7 @@ def createImageTime(startPoint):
     array4 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
     array5 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
 
-    timeMax = findTimeMax(matrix)
+    timeMax = findMaxMatrix(matrix)
 
     version = 1 # 1: coeff, 2: time in secondes
     
@@ -146,18 +124,32 @@ def createImageTime(startPoint):
     cv2.imwrite('time_movie5.jpg', array5)
     createMovie(array1, array2, array3, array4, array5, array)
     
-def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): # a appeler en mode (createMovieTime(mov1, mov2, mov3, mov4, mov5, time_img))
-    # faire une boucle infini dans une autre page openCV pour afficher en boucle les images de temps 
+""" 
+Creating the gif
+Parameters :
+    arr1 - arr6 : all arrays wich represent all matrix used for each images of the gif 
+Return nothing but open a new window with the gift 
+"""
+def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): 
     tab = [arr1, arr2, arr3, arr4, arr5, arr6]
     indice = 0
     for i in range(0, 24):
         array = tab[indice]
         cv2.imshow("movie", array) # Show image
         indice = (indice+ 1)%6
-        #tm.sleep(3)
         cv2.waitKey(1000)
-    return 
 
+
+# functions to create the visual and calculate the time and the speed in consequence 
+
+""" 
+Apply the bresenham march to the image to know by wich cases of the matrix the tsunami go in straight line between two points 
+Parameters :
+    img : an image 
+    p1 : a point, a tuple (x, y)
+    p2 : a point, a tuple (x, y)
+Return a table with all the point we are looking for 
+"""
 def bresenham_march(img, p1, p2):
      x1 = p1[0]
      y1 = p1[1]
@@ -211,10 +203,61 @@ def bresenham_march(img, p1, p2):
      if also_steep:  # because we took the left to right instead
          ret.reverse()
      return ret   
+ 
+""" 
+Display the coordinates of the points clicked on the image, create a gif and  images of the advancement of the tsunami 
+Parameters :
+    event : 
+    x : the x value of the clicked point
+    y : the y value of the clicked point
+    flags : 
+    param : 
+Return a table with all the point we are looking for 
+"""
+def click_event(event, x, y, flags, params): 
+    global NB_CLICS
+    global TAB_CLICS
     
-    
-  
-# driver function 
+    # Left mouse clicks 
+    if NB_CLICS > 0:
+        if event == cv2.EVENT_LBUTTONDOWN: 
+            # displaying X on image
+            sizeX = cv2.getTextSize('X', 0, 1.0, 1)
+            # displaying the coordinates 
+            print(f'x : {x} y : {y}')
+            # on the image window 
+            font = cv2.FONT_HERSHEY_SIMPLEX 
+            cv2.putText(array, 'X', (x-(sizeX[0][0]//2),y+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
+            cv2.imshow('image', array)
+            TAB_CLICS.append((x,y))
+            # creation time image
+            if NB_CLICS == 2:
+                NB_CLICS -= 1
+                createImageTime((x,y))
+            else: NB_CLICS -= 1
+            
+            if NB_CLICS == 0 :
+                # Draw line
+                points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
+                speed_sum = 0
+                for point in points_line :
+                    speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
+                speed_final = speed_sum / len(points_line)
+                print(f'Speed : {speed_final} m/s')
+                print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
+                
+                cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
+                cv2.imshow('image', array) # Show line on 2nd click
+                
+                # Re-init
+                TAB_CLICS = []
+                NB_CLICS = 2
+
+
+#  
+""" 
+Driver function / main function
+"""
 if __name__=="__main__": 
 
     path = "data/bathymetry_small_area_japan_sea.csv"
@@ -229,7 +272,7 @@ if __name__=="__main__":
     matrixH = correctMatrix(createMatrix(dataFrame))
     array = np.zeros([len(matrixH), len(matrixH[0]), 3], dtype=np.uint8)
 
-    deepMax = findDeepMax(matrixH)
+    deepMax = findMinMatrix(matrixH)
 
     for i in range(len(matrixH)) :
         for j in range(len(matrixH[i])):
@@ -246,11 +289,8 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
-    #cv2.namedWindow("Window")
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
-    
-    
     
     while(cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) > 0):
         
@@ -269,12 +309,6 @@ if __name__=="__main__":
             NB_CLICS = 2
             TAB_CLICS = []   
     
-
-    # wait for a key to be pressed to exit 
-    #cv2.waitKey(0)
-    
     # close the window 
     cv2.destroyAllWindows() 
     
-
-
