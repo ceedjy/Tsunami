@@ -8,7 +8,7 @@ import pandas as pd
 from data_functions import *
 import cv2
 import numpy as np
-from tsunami import * 
+from calculus import * 
 from math import fabs
 
 # global variables 
