@@ -14,6 +14,7 @@ from math import fabs
 # global variables 
 NB_CLICS = 2
 TAB_CLICS = []
+VERSION = 0 # version for the gif, 1 is for the coefficient and 0 is for the time in seconds 
 
 # functions to create a gif : 
 
@@ -68,7 +69,8 @@ def createImageTime(startPoint):
 
     timeMax = findMaxMatrix(matrix)
 
-    version = 1 # 1: coeff, 2: time in secondes
+    global VERSION
+    version = VERSION
     
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
@@ -88,27 +90,27 @@ def createImageTime(startPoint):
                 
             # movie image 
             array5[i,j] = color
-            if (version == 1 and coeff >= 0.) or (version == 2 and matrix[i][j] <= 1.0):
+            if (version == 1 and coeff >= 0.8) or (version == 0 and matrix[i][j] <= 1.0):
                 array1[i,j] = color
                 array2[i,j] = color
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 2 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
+            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 0 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = color
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 2 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
+            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 0 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 2 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
+            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 0 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = [0, 0, 0]
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 2 and matrix[i][j] > 4.0):
+            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 0 and matrix[i][j] > 4.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = [0, 0, 0]
@@ -259,7 +261,7 @@ def click_event(event, x, y, flags, params):
 Driver function / main function
 """
 if __name__=="__main__": 
-
+    
     path = "data/bathymetry_small_area_japan_sea.csv"
 
     # Read csv file into a dataframe
@@ -307,7 +309,14 @@ if __name__=="__main__":
             array = base_map.copy()
             cv2.imshow("image", array) 
             NB_CLICS = 2
-            TAB_CLICS = []   
+            TAB_CLICS = []  
+        elif k==118:
+            if VERSION == 1:
+                VERSION = 0
+                print("Change version to time in second")
+            else : 
+                VERSION = 1
+                print("Change version to percent of advancement")
     
     # close the window 
     cv2.destroyAllWindows() 
