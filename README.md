@@ -5,12 +5,19 @@ OSEC project at University Savoie Mont Blanc
    - [ ] => visualiser distance + vitesse + temps jusqu'au point
    - [x] => bouton reinitialiser la map
    - [ ] => bouton qui demande si l'user veut un movie par rapport aux secondes ou par rapport aux pourcentages
-   - [ ] => pouvoir fermer la fenètre  avec au moins une possibilité (croix, touche clavier, autre)
+   - [x] => pouvoir fermer la fenètre avec au moins une possibilité (croix, touche clavier, autre)
  - [x] calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
  - [x] calcul vitesse entre 2 pts sélectionnés
  - [x] ajouter des contour sur l'image du temps (isochrones -> mot a intégrer dans le compte rendu)
- - [x] avoir un mini film avec les images du temps qui se propage, a générer avec openCV pour automatiser sa création 
+ - [x] avoir un mini film avec les images du temps qui se propage, a générer avec openCV pour automatiser sa création
+ - [ ] essayer de faire le tsunami en barre :
+    - [ ] => faire une barre de point (entre les deux points cliqués)
+    - [ ] => faire le travail des 5 images pour chauque point
+    - [ ] => chercher le plus petit pour chaque case de la matrice et faire 5 new image à partir de ça
+    - [ ] => recréer le gif à partir de ces 5 nouvelles images
+ - [ ] optimiser le code pour qu'il soit plus rapide 
  - [ ] compte rendu
+ - [ ] préparer présentation 
 
 # Resources
 OpenCV : 
