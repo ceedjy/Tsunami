@@ -15,7 +15,8 @@ OSEC project at University Savoie Mont Blanc
     - [ ] => faire le travail des 5 images pour chauque point
     - [ ] => chercher le plus petit pour chaque case de la matrice et faire 5 new image à partir de ça
     - [ ] => recréer le gif à partir de ces 5 nouvelles images
- - [ ] optimiser le code pour qu'il soit plus rapide 
+ - [ ] optimiser le code pour qu'il soit plus rapide, open mp, paralléliser les calculs, cython
+ - [ ] téléchgarger le gif 
  - [ ] compte rendu
  - [ ] préparer présentation 
 
