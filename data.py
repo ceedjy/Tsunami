@@ -10,6 +10,8 @@ import cv2
 import numpy as np
 from calculus import * 
 from math import fabs
+import glob
+from PIL import Image
 
 # global variables 
 NB_CLICS = 2
@@ -117,7 +119,7 @@ def createImageTime(startPoint):
                 array4[i,j] = [0, 0, 0]
 
     # Show image
-    cv2.imwrite('time_img.jpg', array)
+    cv2.imwrite('time_ready.jpg', array)
     # Show movie images
     cv2.imwrite('time_movie1.jpg', array1)
     cv2.imwrite('time_movie2.jpg', array2)
@@ -127,7 +129,7 @@ def createImageTime(startPoint):
     createMovie(array1, array2, array3, array4, array5, array)
     
 """ 
-Creating the gif
+Creating the gif in another openCV window 
 Parameters :
     arr1 - arr6 : all arrays wich represent all matrix used for each images of the gif 
 Return nothing but open a new window with the gift 
@@ -135,13 +137,24 @@ Return nothing but open a new window with the gift
 def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): 
     tab = [arr1, arr2, arr3, arr4, arr5, arr6]
     indice = 0
+    download_gif()
     for i in range(0, 24):
         array = tab[indice]
         cv2.imshow("movie", array) # Show image
         indice = (indice+ 1)%6
         cv2.waitKey(1000)
 
+""" 
+Downnload the gif in the current directory with images in the current directory
+"""
+def download_gif():
+    frames = [Image.open(image) for image in glob.glob("./time_*.JPG")]
+    frame_one = frames[0]
+    frame_one.save("tsunami.gif", format="GIF", append_images=frames,
+               save_all=True, duration=1000, loop=0)
+    print("Fin du téléchargement du gif")
 
+    
 # functions to create the visual and calculate the time and the speed in consequence 
 
 """ 
@@ -255,8 +268,6 @@ def click_event(event, x, y, flags, params):
                 TAB_CLICS = []
                 NB_CLICS = 2
 
-
-#  
 """ 
 Driver function / main function
 """
@@ -292,7 +303,7 @@ if __name__=="__main__":
     
     # Show image
     cv2.imwrite('bat_img.jpg', array)
-    cv2.imshow("image", array) 
+    cv2.imshow("image", array)
     
     while(cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) > 0):
         
