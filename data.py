@@ -260,6 +260,10 @@ def click_event(event, x, y, flags, params):
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
                 print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
+                print(f'Distance : {distance(TAB_CLICS[0], TAB_CLICS[1])} m')
+                cv2.putText(array, f'Speed : {round(speed_final, 3)} m/s', (1,len(array)-(2*sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2) 
+                cv2.putText(array, f'Time : {round((distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final), 3)} s', (1,len(array)-(sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2)
+                cv2.putText(array, f'Distance : {round(distance(TAB_CLICS[0], TAB_CLICS[1]))} m', (1,len(array)-10), font, 0.5, (255, 255, 255), 2)
                 
                 cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
                 cv2.imshow('image', array) # Show line on 2nd click
@@ -273,7 +277,7 @@ Driver function / main function
 """
 if __name__=="__main__": 
     
-    path = "data/bathymetry_small_area_japan_sea.csv"
+    path = "data/bathymetry_golfe_gascogne.csv"
 
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
