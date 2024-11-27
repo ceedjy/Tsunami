@@ -1,8 +1,8 @@
 # Tsunami
 OSEC project at University Savoie Mont Blanc
 # TODO
- - [ ] interface :
-   - [ ] => visualiser distance + vitesse + temps jusqu'au point
+ - [x] interface :
+   - [x] => visualiser distance + vitesse + temps jusqu'au point
    - [x] => bouton reinitialiser la map
    - [x] => bouton qui demande si l'user veut un movie par rapport aux secondes ou par rapport aux pourcentages
    - [x] => pouvoir fermer la fenètre avec au moins une possibilité (croix, touche clavier, autre)
