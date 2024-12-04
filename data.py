@@ -17,6 +17,7 @@ from PIL import Image
 NB_CLICS = 2
 TAB_CLICS = []
 VERSION = 0 # version for the gif, 1 is for the coefficient and 0 is for the time in seconds 
+CAN_CLICK = 1 # if the user can click or not to have a good print of speed, time and distance
 
 # functions to create a gif : 
 
@@ -135,14 +136,17 @@ Parameters :
 Return nothing but open a new window with the gift 
 """
 def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): 
+    global CAN_CLICK
     tab = [arr1, arr2, arr3, arr4, arr5, arr6]
     indice = 0
     download_gif()
-    for i in range(0, 24):
+    for i in range(0, 18):
         array = tab[indice]
         cv2.imshow("movie", array) # Show image
         indice = (indice+ 1)%6
         cv2.waitKey(1000)
+    # give the possibility to the user to clic 
+    CAN_CLICK = 1
 
 """ 
 Downnload the gif in the current directory with images in the current directory
@@ -232,9 +236,10 @@ Return a table with all the point we are looking for
 def click_event(event, x, y, flags, params): 
     global NB_CLICS
     global TAB_CLICS
+    global CAN_CLICK 
     
     # Left mouse clicks 
-    if NB_CLICS > 0:
+    if NB_CLICS > 0 and CAN_CLICK:
         if event == cv2.EVENT_LBUTTONDOWN: 
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
@@ -246,14 +251,14 @@ def click_event(event, x, y, flags, params):
             cv2.imshow('image', array)
             TAB_CLICS.append((x,y))
             # creation time image
-            if NB_CLICS == 2:
-                NB_CLICS -= 1
+            NB_CLICS -= 1
+            if NB_CLICS == 1:
+                CAN_CLICK = 0
                 createImageTime((x,y))
-            else: NB_CLICS -= 1
             
             if NB_CLICS == 0 :
                 # Draw line
-                points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
+                points_line = bresenham_march(array, TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1])
                 speed_sum = 0
                 for point in points_line :
                     speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
@@ -265,11 +270,11 @@ def click_event(event, x, y, flags, params):
                 cv2.putText(array, f'Time : {round((distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final), 3)} s', (1,len(array)-(sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2)
                 cv2.putText(array, f'Distance : {round(distance(TAB_CLICS[0], TAB_CLICS[1]))} m', (1,len(array)-10), font, 0.5, (255, 255, 255), 2)
                 
-                cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
+                cv2.line(array, TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1], (0,0,255), 1)
                 cv2.imshow('image', array) # Show line on 2nd click
                 
                 # Re-init
-                TAB_CLICS = []
+                #TAB_CLICS = []
                 NB_CLICS = 2
 
 """ 
@@ -332,6 +337,16 @@ if __name__=="__main__":
             else : 
                 VERSION = 1
                 print("Change version to percent of advancement")
+        elif k==100 or NB_CLICS == 1: # d to delete from the bathymetry the speed, time and distance
+            array = base_map.copy()
+            sizeX = cv2.getTextSize('X', 0, 1.0, 1)
+            font = cv2.FONT_HERSHEY_SIMPLEX 
+            for i in range(0, len(TAB_CLICS), 2):
+                cv2.putText(array, 'X', (TAB_CLICS[i][0]-(sizeX[0][0]//2),TAB_CLICS[i][1]+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
+                if (i+1 < len(TAB_CLICS)):
+                    cv2.putText(array, 'X', (TAB_CLICS[i+1][0]-(sizeX[0][0]//2),TAB_CLICS[i+1][1]+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
+                    cv2.line(array, TAB_CLICS[i], TAB_CLICS[i+1], (0,0,255), 1)
+            cv2.imshow("image", array)
     
     # close the window 
     cv2.destroyAllWindows() 
