@@ -16,7 +16,8 @@ OSEC project at University Savoie Mont Blanc
     - [ ] => chercher le plus petit pour chaque case de la matrice et faire 5 new image à partir de ça
     - [ ] => recréer le gif à partir de ces 5 nouvelles images
  - [ ] optimiser le code pour qu'il soit plus rapide, open mp, paralléliser les calculs, cython
- - [x] téléchgarger le gif 
+ - [x] téléchgarger le gif
+ - [x] effacer les infos de vitesse / temps / distance de la bathymétrie
  - [ ] compte rendu
  - [ ] préparer présentation 
 
