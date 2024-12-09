@@ -11,10 +11,14 @@ import numpy as np
 from calculus import * 
 from math import fabs
 from time import perf_counter, time
+import glob
+from PIL import Image
 
 # global variables 
 NB_CLICS = 2
 TAB_CLICS = []
+VERSION = 0 # version for the gif, 1 is for the coefficient and 0 is for the time in seconds 
+CAN_CLICK = 1 # if the user can click or not to have a good print of speed, time and distance
 
 # functions to create a gif : 
 
@@ -69,7 +73,8 @@ def createImageTime(startPoint):
 
     timeMax = findMaxMatrix(matrix)
 
-    version = 1 # 1: coeff, 2: time in secondes
+    global VERSION
+    version = VERSION
     
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
@@ -89,34 +94,34 @@ def createImageTime(startPoint):
                 
             # movie image 
             array5[i,j] = color
-            if (version == 1 and coeff >= 0.) or (version == 2 and matrix[i][j] <= 1.0):
+            if (version == 1 and coeff >= 0.8) or (version == 0 and matrix[i][j] <= 1.0):
                 array1[i,j] = color
                 array2[i,j] = color
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 2 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
+            if (version == 1 and coeff >= 0.6 and coeff < 0.8) or (version == 0 and matrix[i][j] <= 2.0 and matrix[i][j] > 1.0) :
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = color
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 2 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
+            if (version == 1 and coeff >= 0.4 and coeff < 0.6) or (version == 0 and matrix[i][j] <= 3.0 and matrix[i][j] > 2.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = color
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 2 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
+            if (version == 1 and coeff >= 0.2 and coeff < 0.4) or (version == 0 and matrix[i][j] <= 4.0 and matrix[i][j] > 3.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = [0, 0, 0]
                 array4[i,j] = color
-            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 2 and matrix[i][j] > 4.0):
+            if (version == 1 and coeff >= 0.0 and coeff < 0.2) or (version == 0 and matrix[i][j] > 4.0):
                 array1[i,j] = [0, 0, 0]
                 array2[i,j] = [0, 0, 0]
                 array3[i,j] = [0, 0, 0]
                 array4[i,j] = [0, 0, 0]
 
     # Show image
-    cv2.imwrite('time_img.jpg', array)
+    cv2.imwrite('time_ready.jpg', array)
     # Show movie images
     cv2.imwrite('time_movie1.jpg', array1)
     cv2.imwrite('time_movie2.jpg', array2)
@@ -126,21 +131,35 @@ def createImageTime(startPoint):
     createMovie(array1, array2, array3, array4, array5, array)
     
 """ 
-Creating the gif
+Creating the gif in another openCV window 
 Parameters :
     arr1 - arr6 : all arrays wich represent all matrix used for each images of the gif 
 Return nothing but open a new window with the gift 
 """
 def createMovie(arr1, arr2, arr3, arr4, arr5, arr6): 
+    global CAN_CLICK
     tab = [arr1, arr2, arr3, arr4, arr5, arr6]
     indice = 0
-    for i in range(0, 24):
+    download_gif()
+    for i in range(0, 18):
         array = tab[indice]
         cv2.imshow("movie", array) # Show image
         indice = (indice+ 1)%6
         cv2.waitKey(1000)
+    # give the possibility to the user to clic 
+    CAN_CLICK = 1
 
+""" 
+Downnload the gif in the current directory with images in the current directory
+"""
+def download_gif():
+    frames = [Image.open(image) for image in glob.glob("./time_*.JPG")]
+    frame_one = frames[0]
+    frame_one.save("tsunami.gif", format="GIF", append_images=frames,
+               save_all=True, duration=1000, loop=0)
+    print("Fin du téléchargement du gif")
 
+    
 # functions to create the visual and calculate the time and the speed in consequence 
 
 """ 
@@ -218,9 +237,10 @@ Return a table with all the point we are looking for
 def click_event(event, x, y, flags, params): 
     global NB_CLICS
     global TAB_CLICS
+    global CAN_CLICK 
     
     # Left mouse clicks 
-    if NB_CLICS > 0:
+    if NB_CLICS > 0 and CAN_CLICK:
         if event == cv2.EVENT_LBUTTONDOWN: 
             # displaying X on image
             sizeX = cv2.getTextSize('X', 0, 1.0, 1)
@@ -232,36 +252,39 @@ def click_event(event, x, y, flags, params):
             cv2.imshow('image', array)
             TAB_CLICS.append((x,y))
             # creation time image
-            if NB_CLICS == 2:
-                NB_CLICS -= 1
+            NB_CLICS -= 1
+            if NB_CLICS == 1:
+                CAN_CLICK = 0
                 createImageTime((x,y))
-            else: NB_CLICS -= 1
             
             if NB_CLICS == 0 :
                 # Draw line
-                points_line = bresenham_march(array, TAB_CLICS[0], TAB_CLICS[1])
+                points_line = bresenham_march(array, TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1])
                 speed_sum = 0
                 for point in points_line :
                     speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
                 print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
+                print(f'Distance : {distance(TAB_CLICS[0], TAB_CLICS[1])} m')
+                cv2.putText(array, f'Speed : {round(speed_final, 3)} m/s', (1,len(array)-(2*sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2) 
+                cv2.putText(array, f'Time : {round((distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final), 3)} s', (1,len(array)-(sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2)
+                cv2.putText(array, f'Distance : {round(distance(TAB_CLICS[0], TAB_CLICS[1]))} m', (1,len(array)-10), font, 0.5, (255, 255, 255), 2)
                 
-                cv2.line(array, TAB_CLICS[0], TAB_CLICS[1], (0,0,255), 1)
+                cv2.line(array, TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1], (0,0,255), 1)
                 cv2.imshow('image', array) # Show line on 2nd click
                 
                 # Re-init
-                TAB_CLICS = []
+                #TAB_CLICS = []
                 NB_CLICS = 2
-
 
 
 """ 
 Driver function / main function
 """
 if __name__=="__main__": 
-
-    path = "data/bathymetry_small_area_japan_sea.csv"
+    
+    path = "data/bathymetry_golfe_gascogne.csv"
 
     start = 0
     
@@ -295,7 +318,7 @@ if __name__=="__main__":
     cv2.namedWindow('image', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('image', 1280, 720)
     cv2.imwrite('bat_img.jpg', array)
-    cv2.imshow("image", array) 
+    cv2.imshow("image", array)
     
     end =  perf_counter()
     print(f'time : {end-start}')   
@@ -315,7 +338,24 @@ if __name__=="__main__":
             array = base_map.copy()
             cv2.imshow("image", array) 
             NB_CLICS = 2
-            TAB_CLICS = []   
+            TAB_CLICS = []  
+        elif k==118:
+            if VERSION == 1:
+                VERSION = 0
+                print("Change version to time in second")
+            else : 
+                VERSION = 1
+                print("Change version to percent of advancement")
+        elif k==100 or NB_CLICS == 1: # d to delete from the bathymetry the speed, time and distance
+            array = base_map.copy()
+            sizeX = cv2.getTextSize('X', 0, 1.0, 1)
+            font = cv2.FONT_HERSHEY_SIMPLEX 
+            for i in range(0, len(TAB_CLICS), 2):
+                cv2.putText(array, 'X', (TAB_CLICS[i][0]-(sizeX[0][0]//2),TAB_CLICS[i][1]+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
+                if (i+1 < len(TAB_CLICS)):
+                    cv2.putText(array, 'X', (TAB_CLICS[i+1][0]-(sizeX[0][0]//2),TAB_CLICS[i+1][1]+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
+                    cv2.line(array, TAB_CLICS[i], TAB_CLICS[i+1], (0,0,255), 1)
+            cv2.imshow("image", array)
     
     # close the window 
     cv2.destroyAllWindows() 
