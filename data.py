@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 from calculus import * 
 from math import fabs
+from time import perf_counter, time
 
 # global variables 
 NB_CLICS = 2
@@ -254,7 +255,7 @@ def click_event(event, x, y, flags, params):
                 NB_CLICS = 2
 
 
-#  
+
 """ 
 Driver function / main function
 """
@@ -262,6 +263,8 @@ if __name__=="__main__":
 
     path = "data/bathymetry_small_area_japan_sea.csv"
 
+    start = 0
+    
     # Read csv file into a dataframe
     dataFrame = pd.read_csv(path)
 
@@ -289,8 +292,13 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
+    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('image', 1280, 720)
     cv2.imwrite('bat_img.jpg', array)
     cv2.imshow("image", array) 
+    
+    end =  perf_counter()
+    print(f'time : {end-start}')   
     
     while(cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) > 0):
         
