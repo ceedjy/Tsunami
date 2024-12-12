@@ -3,6 +3,8 @@ Authors :
     Morgane Farez 
     Cassiopée Gossin 
 """
+from multiprocessing import Process, Queue, Pool
+from functools import partial
 
 import pandas as pd
 from data_functions import *
@@ -29,7 +31,7 @@ Parameters :
     endPoint : the endpoint, a tuple (x, y)
 Return the time, float
 """
-def time(startPoint, endPoint):
+def time(startPoint, endPoint, array, matrixH):
     points_line = bresenham_march(array, startPoint, endPoint)
     speed_sum = 0
     for point in points_line :
@@ -57,13 +59,46 @@ def createMatrixTime(startPoint):
     return matrix
 
 """ 
+Creating the matrix for the time image with the multiprocessing (not whole
+                                                        matrix just rows)
+Parameters :
+    startPoint : the start point, a tuple (x, y)
+Return the matrix were all times are calculated 
+"""
+def createMatrixTimeAdapted(i, startPointX, startPointY, array, matrixH):
+    row = []
+    startPoint = (startPointX, startPointY)
+
+    index, item = i   
+    
+    for j in range(0, len(item)):
+        if startPoint == (j, index):
+            row.append(0)
+        else:
+            timeChr = time(startPoint, (j, index),array, matrixH)
+            row.append(timeChr)
+
+    return row
+
+""" 
 Creating the image with the matrix of the time 
 Parameters :
     startPoint : the start point, a tuple (x, y)
 Return nothing, but upload images and call the gif function 
 """
-def createImageTime(startPoint):
-    matrix = createMatrixTime(startPoint)
+def createImageTime(startPoint, array):
+    # Data for optimized function
+    x, y = startPoint
+    mat = list(enumerate(matrixH))
+    
+    # Optimization of the calculation time for the calculation of the propagation time
+    processPool = Pool(processes=None)
+    poolData = processPool.map(partial(createMatrixTimeAdapted, startPointX=x, startPointY=y, array=array, matrixH=matrixH),mat)
+    processPool.close()
+    processPool.join()
+    
+    matrix = np.array(poolData)
+    
     array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
     array1 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
     array2 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
@@ -143,7 +178,11 @@ def createMovie(arr1, arr2, arr3, arr4, arr5, arr6):
     download_gif()
     for i in range(0, 18):
         array = tab[indice]
+        
+        cv2.namedWindow('movie', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('movie', 1280, 720)
         cv2.imshow("movie", array) # Show image
+        
         indice = (indice+ 1)%6
         cv2.waitKey(1000)
     # give the possibility to the user to clic 
@@ -255,7 +294,7 @@ def click_event(event, x, y, flags, params):
             NB_CLICS -= 1
             if NB_CLICS == 1:
                 CAN_CLICK = 0
-                createImageTime((x,y))
+                createImageTime((x,y), array)
             
             if NB_CLICS == 0 :
                 # Draw line
@@ -265,17 +304,16 @@ def click_event(event, x, y, flags, params):
                     speed_sum += speed(g, abs(matrixH[point[1]][point[0]]))
                 speed_final = speed_sum / len(points_line)
                 print(f'Speed : {speed_final} m/s')
-                print(f'Time : {distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final} s')
+                print(f'Time : {distance(TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1])/speed_final} s')
                 print(f'Distance : {distance(TAB_CLICS[0], TAB_CLICS[1])} m')
                 cv2.putText(array, f'Speed : {round(speed_final, 3)} m/s', (1,len(array)-(2*sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2) 
-                cv2.putText(array, f'Time : {round((distance(TAB_CLICS[0], TAB_CLICS[1])/speed_final), 3)} s', (1,len(array)-(sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2)
-                cv2.putText(array, f'Distance : {round(distance(TAB_CLICS[0], TAB_CLICS[1]))} m', (1,len(array)-10), font, 0.5, (255, 255, 255), 2)
+                cv2.putText(array, f'Time : {round((distance(TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1])/speed_final), 3)} s', (1,len(array)-(sizeX[0][1])-10), font, 0.5, (255, 255, 255), 2)
+                cv2.putText(array, f'Distance : {round(distance(TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1]))} m', (1,len(array)-10), font, 0.5, (255, 255, 255), 2)
                 
                 cv2.line(array, TAB_CLICS[len(TAB_CLICS)-2], TAB_CLICS[len(TAB_CLICS)-1], (0,0,255), 1)
                 cv2.imshow('image', array) # Show line on 2nd click
                 
                 # Re-init
-                #TAB_CLICS = []
                 NB_CLICS = 2
 
 
@@ -284,8 +322,10 @@ Driver function / main function
 """
 if __name__=="__main__": 
     
-    path = "data/bathymetry_golfe_gascogne.csv"
-
+    # Bathymetry csv file path
+    path = "data/bathymetry_small_area_japan_sea.csv"
+    
+    # Chrono start
     start = 0
     
     # Read csv file into a dataframe
@@ -295,6 +335,8 @@ if __name__=="__main__":
     if isinstance(dataFrame['latitude'][0], str):
         dataFrame = dataFrame.drop([0])
 
+    # In case data in bathymetry are not fullfilled
+    # All rows have the same legnth
     matrixH = correctMatrix(createMatrix(dataFrame))
     array = np.zeros([len(matrixH), len(matrixH[0]), 3], dtype=np.uint8)
 
@@ -302,7 +344,7 @@ if __name__=="__main__":
 
     for i in range(len(matrixH)) :
         for j in range(len(matrixH[i])):
-            # Not water
+            # No water
             if matrixH[i][j] >= 0.0:
                 array[i, j] = [0, 100, 0]
             else:
@@ -315,17 +357,18 @@ if __name__=="__main__":
     nb_clics = 2
     
     # Show image
+    
     cv2.namedWindow('image', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('image', 1280, 720)
+    cv2.imshow('image', array)
     cv2.imwrite('bat_img.jpg', array)
-    cv2.imshow("image", array)
+    
     
     end =  perf_counter()
     print(f'time : {end-start}')   
     
     while(cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) > 0):
-        
-        cv2.imshow('image',array)
+        #cv2.imshow('image',array)
         
         if nb_clics > 0:
             cv2.setMouseCallback('image', click_event) 
@@ -336,7 +379,7 @@ if __name__=="__main__":
             break
         elif k==114:  # r pressed to reset window
             array = base_map.copy()
-            cv2.imshow("image", array) 
+            cv2.imshow('image', array) 
             NB_CLICS = 2
             TAB_CLICS = []  
         elif k==118:
@@ -355,7 +398,6 @@ if __name__=="__main__":
                 if (i+1 < len(TAB_CLICS)):
                     cv2.putText(array, 'X', (TAB_CLICS[i+1][0]-(sizeX[0][0]//2),TAB_CLICS[i+1][1]+(sizeX[0][1]//2)), font, 1, (0, 0, 255), 2) 
                     cv2.line(array, TAB_CLICS[i], TAB_CLICS[i+1], (0,0,255), 1)
-            cv2.imshow("image", array)
     
     # close the window 
     cv2.destroyAllWindows() 
