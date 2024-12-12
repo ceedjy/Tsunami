@@ -27,8 +27,10 @@ CAN_CLICK = 1 # if the user can click or not to have a good print of speed, time
 """ 
 Calculate the time between two point using Bresenham march 
 Parameters :
-    stratPoint : the start point, a tuple (x, y)
+    stratPoint : the start point, a tuple (x, y)    
     endPoint : the endpoint, a tuple (x, y)
+    array : image array
+    matrixH : matrix of depths
 Return the time, float
 """
 def time(startPoint, endPoint, array, matrixH):
@@ -41,7 +43,7 @@ def time(startPoint, endPoint, array, matrixH):
     return time
 
 """ 
-Creating the matrix for the time image
+Creating the matrix for the time image (to use without the multiprocessing pool)
 Parameters :
     startPoint : the start point, a tuple (x, y)
 Return the matrix were all times are calculated 
@@ -62,7 +64,11 @@ def createMatrixTime(startPoint):
 Creating the matrix for the time image with the multiprocessing (not whole
                                                         matrix just rows)
 Parameters :
-    startPoint : the start point, a tuple (x, y)
+    i : index and row treated by a process
+    startPointX : coordonnate X from the clicked point
+    startPointY : coordonnate Y from the clicked point
+    array : image array
+    matrixH : matrix of the depths
 Return the matrix were all times are calculated 
 """
 def createMatrixTimeAdapted(i, startPointX, startPointY, array, matrixH):
@@ -84,22 +90,26 @@ def createMatrixTimeAdapted(i, startPointX, startPointY, array, matrixH):
 Creating the image with the matrix of the time 
 Parameters :
     startPoint : the start point, a tuple (x, y)
+    arrayImg : image array
 Return nothing, but upload images and call the gif function 
 """
-def createImageTime(startPoint, array):
+def createImageTime(startPoint, arrayImg):
     # Data for optimized function
     x, y = startPoint
     mat = list(enumerate(matrixH))
     
     # Optimization of the calculation time for the calculation of the propagation time
     processPool = Pool(processes=None)
-    poolData = processPool.map(partial(createMatrixTimeAdapted, startPointX=x, startPointY=y, array=array, matrixH=matrixH),mat)
+    poolData = processPool.map(partial(createMatrixTimeAdapted, startPointX=x, startPointY=y, array=arrayImg, matrixH=matrixH),mat)
     processPool.close()
     processPool.join()
     
     matrix = np.array(poolData)
     
+    ##### Arrays to create the gif ####
+    ## Array of propagation colors with edges
     array = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
+    ## Arrays of different steps of the propagation ##
     array1 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
     array2 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
     array3 = np.zeros([len(matrix), len(matrix[0]), 3], dtype=np.uint8)
@@ -110,7 +120,7 @@ def createImageTime(startPoint, array):
 
     global VERSION
     version = VERSION
-    
+    # Set colors in arrays
     for i in range(len(matrix)) :
         for j in range(len(matrix[i])):
             coeff = 1-(abs(matrix[i][j])/(abs(timeMax)))
@@ -354,6 +364,7 @@ if __name__=="__main__":
     # Copy do not touch
     base_map = array.copy()
     
+    # Mouse click counter
     nb_clics = 2
     
     # Show image
@@ -382,7 +393,7 @@ if __name__=="__main__":
             cv2.imshow('image', array) 
             NB_CLICS = 2
             TAB_CLICS = []  
-        elif k==118:
+        elif k==118:    # v to change version of gif (must be pressed before the mouse clicked)
             if VERSION == 1:
                 VERSION = 0
                 print("Change version to time in second")
