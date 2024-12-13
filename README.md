@@ -39,6 +39,10 @@ Few moments after the first click a second window will open.
 On this window you can see the speed or propagation percentage variation (depends on the option chosen).
 </br>
 >[!TIP] 
+> </br>
+> <p align="center">
+>  <img width="460" height="300" src="./resultats/movie_small_area_time/time_movie5.jpg"></p>
+>
 > Interpretation : </br>
 >$${\color{red}Red }$$ : High speed
 ></br>$${\color{purple}Purple }$$ : Mid-speed
