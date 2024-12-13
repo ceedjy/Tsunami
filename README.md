@@ -31,6 +31,9 @@ When you clicked for the second time and line will be drawn between the 2 points
 the distance will be displayed on the left down corner.
 Then you can start again with 2 new points.
 </br>
+
+![demo_red_cross](./resultats/demo_red_cross.gif)
+
 >[!IMPORTANT]  
 > On each first click the cross will not be displayed instantly because of the calculation.
 > </br>Please be patient and do not click until the red cross is showed.
