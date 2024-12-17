@@ -1,6 +1,3 @@
-# Tsunami
-OSEC project at University Savoie Mont Blanc
-
 Prerequisites
 ------------
 * Download a python editor
@@ -50,5 +47,3 @@ On this window you can see the speed or propagation percentage variation (depend
 >$${\color{red}Red }$$ : High speed
 ></br>$${\color{purple}Purple }$$ : Mid-speed
 ></br>$${\color{blue}Blue }$$ : Low speed
-
-
