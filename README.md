@@ -36,7 +36,7 @@ Then you can start again with 2 new points.
 > </br>Please be patient and do not click until the red cross is showed.
 
 Few moments after the first click a second window will open.
-On this window you can see the speed or propagation percentage variation (depends on the option chosen).
+On this window you can see the time of propagation through percentage or time (second) (depends on the option chosen).
 </br>
 >[!TIP] 
 > </br>
