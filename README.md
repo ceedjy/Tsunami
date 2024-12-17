@@ -1,37 +1,49 @@
-# Tsunami
-OSEC project at University Savoie Mont Blanc
-# TODO
- - [x] interface :
-   - [x] => visualiser distance + vitesse + temps jusqu'au point
-   - [x] => bouton reinitialiser la map
-   - [x] => bouton qui demande si l'user veut un movie par rapport aux secondes ou par rapport aux pourcentages
-   - [x] => pouvoir fermer la fenètre avec au moins une possibilité (croix, touche clavier, autre)
- - [x] calcul de la vistesse sur tout les points => sous forme de matrice pour la transformer en image (cf pls couleurs selon les vitesses)
- - [x] calcul vitesse entre 2 pts sélectionnés
- - [x] ajouter des contour sur l'image du temps (isochrones -> mot a intégrer dans le compte rendu)
- - [x] avoir un mini film avec les images du temps qui se propage, a générer avec openCV pour automatiser sa création
- - [ ] essayer de faire le tsunami en barre :
-    - [ ] => faire une barre de point (entre les deux points cliqués)
-    - [ ] => faire le travail des 5 images pour chauque point
-    - [ ] => chercher le plus petit pour chaque case de la matrice et faire 5 new image à partir de ça
-    - [ ] => recréer le gif à partir de ces 5 nouvelles images
- - [ ] optimiser le code pour qu'il soit plus rapide, open mp, paralléliser les calculs, cython
- - [x] téléchgarger le gif
- - [x] effacer les infos de vitesse / temps / distance de la bathymétrie
- - [ ] compte rendu
- - [ ] préparer présentation 
+Prerequisites
+------------
+* Download a python editor
+* Download the following libraries : cv2, numpy, pandas
+```
+pip install opencv-python
+pip install numpy
+pip install pandas
+```
 
-# Resources
-OpenCV : 
-https://shimat.github.io/opencvsharp_docs/html/66fb2360-14d2-3431-c0ef-1679c153cf06.htm
-https://stackoverflow.com/questions/73056691/how-do-we-interpret-the-baseline-output-of-cv2-gettextsize
+Getting started with the interface
+------------
+1. Keyboard
+    * r : reset batymetry picture
+    * v : change version of gif : time or propagation percentage (default option : time)
+    * d : clear data informations (distance, time, speed)
+    * esc : quit the app
 
-Line :
-https://www.geeksforgeeks.org/python-opencv-cv2-line-method/
+2. Mouse </br>
+Click to put a cross on the batymetry.
+</br></br>
+The clicks work by pair :
+   * First click : starting point of the tsunami
+   * Second click : point to be reached
+</br>
+   
+When you clicked for the second time and line will be drawn between the 2 points and the mid-speed, the time and
+the distance will be displayed on the left down corner.
+Then you can start again with 2 new points.
+</br>
 
-LineIterator : (Algo Bresenham)
-https://amroamroamro.github.io/mexopencv/matlab/cv.LineIterator.html
-https://docs.opencv.org/4.x/dc/dd2/classcv_1_1LineIterator.html
+![demo_red_cross](./resultats/demo_red_cross.gif)
 
-Bresenham (wiki):
-https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_Bresenham
+>[!IMPORTANT]  
+> On each first click the cross will not be displayed instantly because of the calculation.
+> </br>Please be patient and do not click until the red cross is showed.
+
+Few moments after the first click a second window will open.
+On this window you can see the speed or propagation percentage variation (depends on the option chosen).
+</br>
+>[!TIP] 
+> </br>
+> <p align="center">
+>  <img width="460" height="300" src="./resultats/movie_small_area_time/time_movie5.jpg"></p>
+>
+> Interpretation : </br>
+>$${\color{red}Red }$$ : High speed
+></br>$${\color{purple}Purple }$$ : Mid-speed
+></br>$${\color{blue}Blue }$$ : Low speed
