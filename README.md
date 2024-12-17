@@ -44,6 +44,6 @@ On this window you can see the time of propagation through percentage or time (s
 >  <img width="460" height="300" src="./resultats/movie_small_area_time/time_img.jpg"></p>
 >
 > Interpretation : </br>
->$${\color{red}Red }$$ : High speed
-></br>$${\color{purple}Purple }$$ : Mid-speed
-></br>$${\color{blue}Blue }$$ : Low speed
+>$${\color{red}Red }$$ : Less than 1s
+></br>$${\color{purple}Purple }$$ : mid-time
+></br>$${\color{blue}Blue }$$ : Few seconds
