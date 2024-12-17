@@ -41,7 +41,7 @@ On this window you can see the speed or propagation percentage variation (depend
 >[!TIP] 
 > </br>
 > <p align="center">
->  <img width="460" height="300" src="./resultats/movie_small_area_time/time_movie5.jpg"></p>
+>  <img width="460" height="300" src="./resultats/movie_small_area_time/time_img.jpg"></p>
 >
 > Interpretation : </br>
 >$${\color{red}Red }$$ : High speed
